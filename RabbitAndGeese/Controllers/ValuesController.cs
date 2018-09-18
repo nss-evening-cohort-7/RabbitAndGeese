@@ -6,8 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace RabbitAndGeese.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
+    [ApiController, Route("api/things")]
     public class ValuesController : ControllerBase
     {
         // GET api/values
@@ -18,7 +17,7 @@ namespace RabbitAndGeese.Controllers
         }
 
         // GET api/values/5
-        [HttpGet("{id}")]
+        [HttpGet("stuff/{id}")]
         public ActionResult<string> Get(int id)
         {
             return "value";
@@ -26,14 +25,16 @@ namespace RabbitAndGeese.Controllers
 
         // POST api/values
         [HttpPost]
-        public void Post([FromBody] string value)
+        public IActionResult Post([FromBody] string value)
         {
+            return Ok();
         }
 
         // PUT api/values/5
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] string value)
         {
+
         }
 
         // DELETE api/values/5
