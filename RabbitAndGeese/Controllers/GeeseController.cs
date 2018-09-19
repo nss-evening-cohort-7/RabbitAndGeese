@@ -1,10 +1,7 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using RabbitAndGeese.Models;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using RabbitAndGeese.Models;
 
 namespace RabbitAndGeese.Controllers
 {
@@ -47,8 +44,5 @@ namespace RabbitAndGeese.Controllers
             Geese.Add(goose);
             return Ok();
         }
-
-
-
     }
 }
