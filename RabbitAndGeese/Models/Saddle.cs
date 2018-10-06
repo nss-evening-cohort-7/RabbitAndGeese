@@ -8,8 +8,8 @@
         public SaddleType Type { get; set; }
         public bool InUse { get; set; }
         public bool Thing { get; set; }
-        public bool OtherThing { get; set; }
-        public bool MoreStuff { get; set; }
+        public bool Blerg { get; set; }
+        public bool Blarg { get; set; }
     }
 
     public enum SaddleType
