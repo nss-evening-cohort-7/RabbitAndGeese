@@ -8,8 +8,6 @@
         public SaddleType Type { get; set; }
         public bool InUse { get; set; }
         public bool Thing { get; set; }
-        public bool Ugh { get; set; }
-        public bool MakenBacon { get; set; }
     }
 
     public enum SaddleType

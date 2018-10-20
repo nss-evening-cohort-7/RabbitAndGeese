@@ -26,6 +26,12 @@ namespace RabbitAndGeese.Controllers
             _storage.Add(rabbit);
         }
 
+        [HttpGet("{id}")]
+        public IActionResult GetRabbitById(int id)
+        {
+            return Ok(_storage.GetById(id);
+        }
+
         [HttpPut("{id}/geese")]
         public IActionResult AddGooseToRabbit(int id, Goose goose)
         {

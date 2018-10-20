@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using RabbitAndGeese.Models;
@@ -18,7 +19,32 @@ namespace RabbitAndGeese.DataAccess
 
         public Rabbit GetById(int id)
         {
-            return _hutch.FirstOrDefault(rabbit => rabbit.Id == id);
+            using (var connection = new SqlConnection("Server=(local);Database=RabbitAndGeese;Trusted_Connection=True;"))
+            {
+                connection.Open();
+
+                var command = connection.CreateCommand();
+                command.CommandText = $@"select *
+                                    from Rabbit
+                                    where Id = {id}";
+
+                var reader = command.ExecuteReader();
+
+                if (reader.Read())
+                {
+                    var rabbit = new Rabbit
+                    {
+                        Id = (int) reader["Id"],
+                        Name = reader["Name"].ToString(),
+                        MaxFeetPerSecond = (int) reader["MaxFeetPerSecond"],
+                        Size = Enum.Parse<Size>(reader["Size"].ToString())
+                    };
+
+                    return rabbit;
+                }
+
+                return null;
+            }
         }
     }
 }
