@@ -29,7 +29,27 @@ namespace RabbitAndGeese.Controllers
         [HttpGet("{id}")]
         public IActionResult GetRabbitById(int id)
         {
-            return Ok(_storage.GetById(id);
+            return Ok(_storage.GetById(id));
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult DeleteRabbit(int id)
+        {
+            var rabbit = _storage.GetById(id);
+
+            if (rabbit == null)
+            {
+                return NotFound();
+            }
+
+            var success = _storage.DeleteById(id);
+
+            if (success)
+            {
+                return Ok();
+            }
+
+            return BadRequest(new {Message = "Delete was unsuccessful"});
         }
 
         [HttpPut("{id}/geese")]
