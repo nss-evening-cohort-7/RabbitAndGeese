@@ -4,6 +4,8 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using Dapper;
+using Microsoft.Extensions.Configuration;
 using RabbitAndGeese.Models;
 
 namespace RabbitAndGeese.DataAccess
@@ -11,7 +13,12 @@ namespace RabbitAndGeese.DataAccess
     public class RabbitStorage
     {
         static List<Rabbit> _hutch = new List<Rabbit>();
-        private const string ConnectionString = "Server=(local);Database=RabbitAndGeese;Trusted_Connection=True;";
+        private readonly string ConnectionString;
+
+        public  RabbitStorage(IConfiguration config)
+        {
+            ConnectionString = config.GetSection("ConnectionString").Value;
+        }
 
         public bool Add(Rabbit rabbit)
         {
@@ -22,69 +29,49 @@ namespace RabbitAndGeese.DataAccess
             {
                 db.Open();
 
-                var command = db.CreateCommand();
-                command.CommandText = @"INSERT INTO [dbo].[Rabbit]([Name],[Color],[MaxFeetPerSecond],[Size],[Sex])
-                                        VALUES (@Name,@Color,@MaxFeet,@Size,@Sex)";
-
-                command.Parameters.AddWithValue("@name", rabbit.Name);
-                command.Parameters.AddWithValue("@Color", rabbit.Color);
-                command.Parameters.AddWithValue("@MaxFeet", rabbit.MaxFeetPerSecond);
-                command.Parameters.AddWithValue("@Size", rabbit.Size);
-                command.Parameters.AddWithValue("@Sex", rabbit.Sex);
-
-                var result = command.ExecuteNonQuery();
+                var result = db.Execute(@"INSERT INTO [dbo].[Rabbit]([Name],[Color],[MaxFeetPerSecond],[Size],[Sex])
+                                        VALUES (@Name,@Color,@MaxFeetPerSecond,@Size,@Sex)", rabbit);
 
                 return result == 1;
             }
 
         }
 
-        public Rabbit GetById(int id)
+        public List<Rabbit> GetAllRabbits()
         {
             using (var connection = new SqlConnection(ConnectionString))
             {
                 connection.Open();
 
-                var command = connection.CreateCommand();
-                command.CommandText = @"select *
-                                    from Rabbit
-                                    where Id = @id";
-                
-                //var idParameter = new SqlParameter("@id",SqlDbType.Int);
-                //idParameter.Value = id;
-                //command.Parameters.Add(idParameter);
+                var result = connection.Query<Rabbit>("select * from Rabbit");
 
-                command.Parameters.AddWithValue("@id", id);
-
-                var reader = command.ExecuteReader();
-
-                if (reader.Read())
-                {
-                    var rabbit = new Rabbit
-                    {
-                        Id = (int) reader["Id"],
-                        Name = reader["Name"].ToString(),
-                        MaxFeetPerSecond = (int) reader["MaxFeetPerSecond"],
-                        Size = Enum.Parse<Size>(reader["Size"].ToString())
-                    };
-
-                    return rabbit;
-                }
-
-                return null;
+                return result.ToList();
             }
         }
-        public bool DeleteById(int id)
+
+        public Rabbit GetById(int rabbitId)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                connection.Open();
+
+                var result = connection.QueryFirst<Rabbit>(@"select *
+                                    from Rabbit
+                                    where Id = @id", new { id = rabbitId});
+
+                var result2 = connection.Query<Rabbit>("select * from Rabbit");
+
+                return result;
+            }
+        }
+
+        public bool DeleteById(int rabbitId)
         {
             using (var db = new SqlConnection(ConnectionString))
             {
                 db.Open();
 
-                var command = db.CreateCommand();
-                command.CommandText = @"Delete From Rabbit Where id = @id";
-                command.Parameters.AddWithValue("@id", id);
-
-                var result = command.ExecuteNonQuery();
+                var result = db.Execute("Delete From Rabbit Where id = @id", new { id = rabbitId });
 
                 return result == 1;
             }

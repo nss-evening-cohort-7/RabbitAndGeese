@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using RabbitAndGeese.DataAccess;
 using RabbitAndGeese.Models;
 
@@ -15,15 +16,21 @@ namespace RabbitAndGeese.Controllers
     {
         private readonly RabbitStorage _storage;
 
-        public RabbitController()
+        public RabbitController(IConfiguration config)
         {
-            _storage = new RabbitStorage();
+            _storage = new RabbitStorage(config);
         }
 
         [HttpPost]
         public void AddACustomer(Rabbit rabbit)
         {
             _storage.Add(rabbit);
+        }
+
+        [HttpGet]
+        public IActionResult GetRabbits()
+        {
+            return Ok(_storage.GetAllRabbits());
         }
 
         [HttpGet("{id}")]
