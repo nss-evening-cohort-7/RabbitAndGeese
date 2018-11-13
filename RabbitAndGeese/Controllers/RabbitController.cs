@@ -16,9 +16,9 @@ namespace RabbitAndGeese.Controllers
     {
         private readonly RabbitStorage _storage;
 
-        public RabbitController(IConfiguration config)
+        public RabbitController(RabbitStorage storage)
         {
-            _storage = new RabbitStorage(config);
+            _storage = storage;
         }
 
         [HttpPost]
